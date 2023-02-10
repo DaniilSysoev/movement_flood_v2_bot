@@ -1,0 +1,23 @@
+{
+  "message": {
+    "date": 1512769437,
+    "from": {
+      "is_bot": false,
+      "id": 449567677,
+      "last_name": "Sysoev",
+      "first_name": "Daniil",
+      "language_code": "en",
+      "username": "dmsysoev"
+    },
+    "text": "/all_birthdays",
+    "chat": {
+      "first_name": "Daniil",
+      "id": 449567677,
+      "last_name": "Sysoev",
+      "type": "private",
+      "username": "dmsysoev"
+    },
+    "message_id": 183
+  },
+  "update_id": 1578789523745
+}
