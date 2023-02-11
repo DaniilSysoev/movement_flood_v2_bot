@@ -11,11 +11,12 @@ import json
 
 
 bot = telebot.TeleBot(settings.BOT_TOKEN)
-# https://api.telegram.org/bot6061400466:AAHJnAjiriDTu98rPyt7tF0_kIXsEEPKjBM/setWebhook?url=https://9e93-83-242-179-137.eu.ngrok.io/
+# https://api.telegram.org/bot6061400466:AAHJnAjiriDTu98rPyt7tF0_kIXsEEPKjBM/setWebhook?url=https://02ea-95-64-192-254.eu.ngrok.io
+# https://api.telegram.org/bot6061400466:AAHJnAjiriDTu98rPyt7tF0_kIXsEEPKjBM/deleteWebhook?url=https://9e93-83-242-179-137.eu.ngrok.io/
 
 
 def index(request):
-    bot.set_webhook('https://9e93-83-242-179-137.eu.ngrok.io/')
+    # bot.set_webhook('https://9e93-83-242-179-137.eu.ngrok.io/')
     if request.method == "POST":
         update = telebot.types.Update.de_json(request.body.decode('utf-8'))
         bot.process_new_updates([update])

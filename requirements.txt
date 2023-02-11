@@ -6,7 +6,7 @@ beautifulsoup4==4.11.2
 bs4==0.0.1
 certifi==2022.12.7
 charset-normalizer==2.1.1
-Django==4.1.6
+Django==4.0.6
 frozenlist==1.3.3
 idna==3.4
 multidict==6.0.4
