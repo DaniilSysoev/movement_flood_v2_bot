@@ -2,19 +2,21 @@ from django.shortcuts import HttpResponse
 import telebot
 from django.conf import settings
 from .models import Profile
-from datetime import date
+import datetime
 from .congrats_text import CongratsText
 import random
 from .horo import Horo
 from .events import Events
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 
 bot = telebot.TeleBot(settings.BOT_TOKEN)
-# https://api.telegram.org/bot6061400466:AAHJnAjiriDTu98rPyt7tF0_kIXsEEPKjBM/setWebhook?url=https://02ea-95-64-192-254.eu.ngrok.io
-# https://api.telegram.org/bot6061400466:AAHJnAjiriDTu98rPyt7tF0_kIXsEEPKjBM/deleteWebhook?url=https://9e93-83-242-179-137.eu.ngrok.io/
+# https://api.telegram.org/bot6061400466:AAHJnAjiriDTu98rPyt7tF0_kIXsEEPKjBM/setWebhook?url=https://a398-89-175-46-15.eu.ngrok.io/
+# https://api.telegram.org/bot6061400466:AAHJnAjiriDTu98rPyt7tF0_kIXsEEPKjBM/deleteWebhook?url=https://a398-89-175-46-15.eu.ngrok.io/
 
 
+@csrf_exempt
 def index(request):
     # bot.set_webhook('https://9e93-83-242-179-137.eu.ngrok.io/')
     if request.method == "POST":
@@ -89,7 +91,7 @@ def register(message: telebot.types.Message):
         else:
             bot.send_message(message.chat.id, 'Принято...')
             clean_date = list(text[3].split('.'))
-            clean_date = date(int(clean_date[2]), int(clean_date[1]), int(clean_date[0]))
+            clean_date = datetime.date(int(clean_date[2]), int(clean_date[1]), int(clean_date[0]))
             p, _ = Profile.objects.get_or_create(
                 foreign_id=message.from_user.id,
                 defaults={
@@ -106,6 +108,7 @@ def register(message: telebot.types.Message):
                 Profile.objects.filter(foreign_id=message.from_user.id).update(id_channel=message.chat.id,
                                                                                name=text[1], tg_tag=text[2],
                                                                                birthday=clean_date)
+                bot.send_message(message.chat.id, Profile.objects.filter(foreign_id=message.from_user.id).values())
                 bot.send_message(message.chat.id, 'Профиль обновлен!')
     else:
         bot.send_message(message.chat.id, 'Не хватает данных')
@@ -116,8 +119,9 @@ def birthday(message: telebot.types.Message):
     profiles = Profile.objects.filter(id_channel=message.chat.id).values()
     congrats = []
     for i in profiles:
-        if date.today().day == i['birthday'].day and date.today().month == i['birthday'].month:
-            congrats.append([i['name'], i['tg_tag'], date.today().year-i['birthday'].year])
+        now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=3, minutes=0)
+        if now.day == i['birthday'].day and now.month == i['birthday'].month:
+            congrats.append([i['name'], i['tg_tag'], now.year-i['birthday'].year])
     text = ''
     if len(congrats) == 0:
         bot.send_message(message.chat.id, 'Сегодня ни у кого нет дня рождения ((')
@@ -143,11 +147,12 @@ def all_birthdays(message):
         profiles = Profile.objects.all().values()
         dict_of_congrats = {}
         for i in profiles:
-            if date.today().day == i['birthday'].day and date.today().month == i['birthday'].month:
+            now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=3, minutes=0)
+            if now.day == i['birthday'].day and now.month == i['birthday'].month:
                 if i['id_channel'] in list(dict_of_congrats.keys()):
-                    dict_of_congrats[i['id_channel']].append([i['name'], i['tg_tag'], date.today().year-i['birthday'].year])
+                    dict_of_congrats[i['id_channel']].append([i['name'], i['tg_tag'], now.year-i['birthday'].year])
                 else:
-                    dict_of_congrats[i['id_channel']] = [[i['name'], i['tg_tag'], date.today().year-i['birthday'].year]]
+                    dict_of_congrats[i['id_channel']] = [[i['name'], i['tg_tag'], now.year-i['birthday'].year]]
         else:
             for i in dict_of_congrats:
                 text = ''
@@ -196,6 +201,7 @@ def astro(message: telebot.types.Message):
 
 
 @bot.message_handler(commands=['events'])
-def events(message):
+def events(message: telebot.types.Message):
     events = Events()
-    bot.send_message(message.chat.id, f'Сегодня {str(date.today())} отмечаются праздники:\n\n'+"\n".join(events.list_of_events))
+    now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=3, minutes=0)
+    bot.send_message(message.chat.id, f'Сегодня {str(now.date())} отмечаются праздники:\n\n'+"\n".join(events.list_of_events))
