@@ -1,0 +1,6 @@
+.env
+ngrok.exe
+ngrok-v3-stable-linux-amd64.tgz
+.idea
+message.json
+db.sqlite3
